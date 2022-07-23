@@ -237,7 +237,7 @@ function AndrezzzDediStart_API(array $params) {
 
     if (isset($responseData['status']) && $responseData['status'] === 0) throw new Exception($responseData['result']);
 
-    return $responseData['result'];
+    return ($params['api']) ? $responseData : $responseData['result'];
 }
 
 function AndrezzzDediStart_Error($func, $params, Exception $err) {
@@ -569,16 +569,15 @@ function AndrezzzDediStart_ClientAreaAPI(array $params) {
     try {
         $action = App::getFromRequest('api');
         $actions = array('Server', 'IPs', 'ReverseDNS', 'Operating Systems', 'Graphs', 'Reboot', 'PowerUp', 'PowerDown', 'Cancel', 'Stop-Cancellation', 'KVM', 'KVM Destroy Session', 'Reinstall', 'Stop-Reinstall');
-        $results = array('status' => 'success');
 
         if (in_array($action, $actions)) {
             foreach ($_POST as $key => $value) {
                 $params[$key] = $value;
             }
 
+            $params['api'] = true;
             $params['action'] = $action;
-            $result = AndrezzzDediStart_API($params);
-            $results = array_merge($results, array('result' => $result));
+            $results = AndrezzzDediStart_API($params);
 
             return array('jsonResponse' => $results);
         } else {
@@ -586,7 +585,7 @@ function AndrezzzDediStart_ClientAreaAPI(array $params) {
         }
     } catch(Exception $err) {
         AndrezzzDediStart_Error(__FUNCTION__, $params, $err);
-        return array('jsonResponse' => array('result' => 'error', 'message' => $err->getMessage()));
+        return array('jsonResponse' => array('status' => 0, 'result' => $err->getMessage()));
     }
 }
 
