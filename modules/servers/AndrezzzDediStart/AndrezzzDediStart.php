@@ -578,7 +578,7 @@ function AndrezzzDediStart_ClientAreaAPI(array $params) {
 
             $params['action'] = $action;
             $result = AndrezzzDediStart_API($params);
-            $results = array_merge($results, is_array($result) ? $result : array('result' => $result));
+            $results = array_merge($results, array('result' => $result));
 
             return array('jsonResponse' => $results);
         } else {
